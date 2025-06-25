@@ -4,15 +4,27 @@ import tensorflow as tf
 import librosa
 import soundfile as sf
 
-# Define custom attention layer
-class Attention(tf.keras.layers.Layer):
+from tensorflow.keras.layers import Layer
+import tensorflow.keras.backend as K
+
+class Attention(Layer):
     def __init__(self, **kwargs):
         super(Attention, self).__init__(**kwargs)
 
-    def call(self, inputs):
-        query = tf.nn.tanh(inputs)
-        weights = tf.nn.softmax(tf.reduce_sum(query, axis=2, keepdims=True), axis=1)
-        context = tf.reduce_sum(inputs * weights, axis=1)
+    def build(self, input_shape):
+        self.W = self.add_weight(shape=(input_shape[-1], 1),
+                                 initializer='glorot_uniform',
+                                 trainable=True)
+        self.b = self.add_weight(shape=(input_shape[1], 1),
+                                 initializer='zeros',
+                                 trainable=True)
+        super(Attention, self).build(input_shape)
+
+    def call(self, x):
+        e = K.tanh(K.dot(x, self.W) + self.b)  # (batch_size, timesteps, 1)
+        alpha = K.softmax(e, axis=1)  # attention weights
+        context = x * alpha  # apply attention
+        context = K.sum(context, axis=1)  # sum over time
         return context
 
 # Load the model
