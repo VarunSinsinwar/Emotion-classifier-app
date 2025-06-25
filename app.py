@@ -32,7 +32,7 @@ model = tf.keras.models.load_model("emotion_classifier_gru.h5", custom_objects={
 emotion_classes = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
 # Feature extraction
-def extract_features(file_path, max_pad_len=174):
+def extract_features(file_path, max_pad_len=200):
     audio, sr = librosa.load(file_path, res_type='kaiser_fast')
     mfccs = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=40)
     pad_width = max_pad_len - mfccs.shape[1]
