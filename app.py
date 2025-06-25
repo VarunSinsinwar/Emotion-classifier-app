@@ -40,7 +40,7 @@ def extract_features(file_path, max_pad_len=200):
         mfccs = np.pad(mfccs, ((0, 0), (0, pad_width)), mode='constant')
     else:
         mfccs = mfccs[:, :max_pad_len]
-    return mfccs
+    return mfccs.T
 
 # UI
 st.set_page_config(page_title="Emotion Recognition", layout="centered")
